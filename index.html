@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CGPA Calculator - 10 Subjects</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+.container {
+    background-color: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    max-width: 500px;
+    width: 100%;
+}
+h1 { text-align: center; color: #333; }
+.button-group { display: flex; justify-content: space-between; margin-bottom: 20px; }
+.button-group button {
+    flex: 1; margin: 0 5px; padding: 10px; border: none;
+    border-radius: 5px; cursor: pointer; background-color: #007bff; color: white; font-weight: bold;
+}
+.button-group button.active { background-color: #0056b3; }
+input {
+    width: 100%; padding: 10px; margin: 5px 0 15px 0;
+    border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box;
+}
+button.calculate {
+    width: 100%; padding: 10px; border: none; border-radius: 5px;
+    background-color: #28a745; color: white; font-weight: bold; cursor: pointer;
+}
+.result { margin-top: 15px; font-weight: bold; text-align: center; color: #333; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>CGPA Calculator</h1>
+<div class="button-group">
+    <button id="subjectBtn" class="active" onclick="showSection('subject')">Subject GPA</button>
+    <button id="semesterBtn" onclick="showSection('semester')">Semester GPA</button>
+    <button id="totalBtn" onclick="showSection('total')">Total CGPA</button>
+</div>
+
+<!-- Subject GPA -->
+<div id="subject" class="section">
+    <input type="number" id="final" placeholder="Final (50)" min="0" max="50">
+    <input type="number" id="mid" placeholder="Mid (30)" min="0" max="30">
+    <input type="number" id="sessional" placeholder="Sessional (20)" min="0" max="20">
+    <button class="calculate" onclick="calculateSubjectGPA()">Calculate GPA</button>
+    <div class="result" id="subjectResult"></div>
+</div>
+
+<!-- Semester GPA -->
+<div id="semester" class="section" style="display:none;">
+    <div id="semesterInputs"></div>
+    <button class="calculate" onclick="calculateSemesterGPA()">Calculate SGPA</button>
+    <div class="result" id="semesterResult"></div>
+</div>
+
+<!-- Total CGPA -->
+<div id="total" class="section" style="display:none;">
+    <div id="totalInputs">
+        <input type="number" placeholder="Semester 1 GPA" min="0" max="4">
+        <input type="number" placeholder="Semester 2 GPA" min="0" max="4">
+        <input type="number" placeholder="Semester 3 GPA" min="0" max="4">
+        <input type="number" placeholder="Semester 4 GPA" min="0" max="4">
+        <input type="number" placeholder="Semester 5 GPA" min="0" max="4">
+        <input type="number" placeholder="Semester 6 GPA" min="0" max="4">
+        <input type="number" placeholder="Semester 7 GPA" min="0" max="4">
+        <input type="number" placeholder="Semester 8 GPA" min="0" max="4">
+    </div>
+    <button class="calculate" onclick="calculateTotalCGPA()">Calculate CGPA</button>
+    <div class="result" id="totalResult"></div>
+</div>
+</div>
+
+<script>
+// Show section
+function showSection(section){
+    document.querySelectorAll('.section').forEach(s => s.style.display='none');
+    document.getElementById(section).style.display='block';
+    document.querySelectorAll('.button-group button').forEach(b=>b.classList.remove('active'));
+    if(section==='subject') document.getElementById('subjectBtn').classList.add('active');
+    if(section==='semester') document.getElementById('semesterBtn').classList.add('active');
+    if(section==='total') document.getElementById('totalBtn').classList.add('active');
+}
+
+// Subject GPA grading system (your detailed version)
+function calculateGPA(total) {
+    const rounded = Math.round(total);
+    if (rounded >= 80) return 4.0;
+    else if (rounded === 79) return 3.9;
+    else if (rounded === 78) return 3.9;
+    else if (rounded === 77) return 3.8;
+    else if (rounded === 76) return 3.7;
+    else if (rounded === 75) return 3.7;
+    else if (rounded === 74) return 3.6;
+    else if (rounded === 73) return 3.5;
+    else if (rounded === 72) return 3.5;
+    else if (rounded === 71) return 3.4;
+    else if (rounded === 70) return 3.3;
+    else if (rounded === 69) return 3.3;
+    else if (rounded === 68) return 3.2;
+    else if (rounded === 67) return 3.1;
+    else if (rounded === 66) return 3.1;
+    else if (rounded === 65) return 3.0;
+    else if (rounded === 64) return 2.9;
+    else if (rounded === 63) return 2.9;
+    else if (rounded === 62) return 2.8;
+    else if (rounded === 61) return 2.7;
+    else if (rounded === 60) return 2.7;
+    else if (rounded === 59) return 2.6;
+    else if (rounded === 58) return 2.5;
+    else if (rounded === 57) return 2.5;
+    else if (rounded === 56) return 2.4;
+    else if (rounded === 55) return 2.3;
+    else if (rounded === 54) return 2.3;
+    else if (rounded === 53) return 2.2;
+    else if (rounded === 52) return 2.1;
+    else if (rounded === 51) return 2.1;
+    else if (rounded === 50) return 2.0;
+    else return 0.0;
+}
+
+// Calculate Subject GPA
+function calculateSubjectGPA(){
+    const final = parseFloat(document.getElementById('final').value) || 0;
+    const mid = parseFloat(document.getElementById('mid').value) || 0;
+    const sessional = parseFloat(document.getElementById('sessional').value) || 0;
+    const total = final + mid + sessional;
+    const gpa = calculateGPA(total);
+    document.getElementById('subjectResult').innerText = `GPA: ${gpa.toFixed(2)} (Total: ${total})`;
+}
+
+// Generate dynamic inputs for Semester GPA (5-10 subjects)
+const semesterContainer = document.getElementById('semesterInputs');
+let numberOfSubjects = 10; // can be 5-10 dynamically
+for(let i=1;i<=numberOfSubjects;i++){
+    semesterContainer.innerHTML += `<input type="number" placeholder="Subject ${i} GPA" min="0" max="4" step="0.01"><br>`;
+}
+
+// Semester GPA = average of entered GPAs
+function calculateSemesterGPA(){
+    const inputs = document.querySelectorAll('#semesterInputs input');
+    let valid=[];
+    inputs.forEach(input=>{
+        const val = parseFloat(input.value);
+        if(!isNaN(val) && val>=0 && val<=4) valid.push(val);
+    });
+    if(valid.length===0){
+        document.getElementById('semesterResult').innerText="Enter at least 1 valid GPA";
+        return;
+    }
+    const avg = valid.reduce((a,b)=>a+b,0)/valid.length;
+    document.getElementById('semesterResult').innerText=`Semester GPA: ${avg.toFixed(2)}`;
+}
+
+// Total CGPA = average of semester GPAs
+function calculateTotalCGPA(){
+    const inputs = document.querySelectorAll('#totalInputs input');
+    let valid=[];
+    inputs.forEach(input=>{
+        const val = parseFloat(input.value);
+        if(!isNaN(val) && val>=0 && val<=4) valid.push(val);
+    });
+    if(valid.length>0){
+        const avg = valid.reduce((a,b)=>a+b,0)/valid.length;
+        document.getElementById('totalResult').innerText=`Total CGPA: ${avg.toFixed(2)}`;
+    }else{
+        document.getElementById('totalResult').innerText="Enter at least 1 valid semester GPA";
+    }
+}
+</script>
+</body>
+</html>
