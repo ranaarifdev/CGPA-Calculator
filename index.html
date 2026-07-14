@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Smart CGPA Calculator</title>
+
 <style>
 * {
     margin: 0;
@@ -27,7 +29,7 @@ body {
     padding: 30px 35px;
     border-radius: 20px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    max-width: 550px;
+    max-width: 650px;
     width: 100%;
     transition: transform 0.3s ease;
 }
@@ -75,7 +77,12 @@ h1 {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.2),
+        transparent
+    );
     transition: left 0.5s;
 }
 
@@ -91,7 +98,7 @@ h1 {
 .button-group button.active {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 5px 20px rgba(102,126,234,0.4);
 }
 
 .section {
@@ -103,6 +110,7 @@ h1 {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -136,7 +144,7 @@ h1 {
 .input-group input:focus {
     outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
     background: white;
 }
 
@@ -170,13 +178,13 @@ h1 {
     font-size: 16px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 5px 20px rgba(102,126,234,0.3);
     margin-top: 10px;
 }
 
 .calculate-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 8px 30px rgba(102,126,234,0.4);
 }
 
 .calculate-btn:active {
@@ -213,7 +221,7 @@ h1 {
     font-size: 14px;
     color: #666;
     text-align: center;
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
 .result-detail .highlight {
@@ -226,10 +234,11 @@ h1 {
     color: #888;
     margin-top: 12px;
     text-align: center;
-    padding: 8px;
+    padding: 9px;
     background: #f8f9fc;
     border-radius: 8px;
     border-left: 3px solid #667eea;
+    line-height: 1.5;
 }
 
 .badge {
@@ -261,33 +270,81 @@ h1 {
     color: #721c24;
 }
 
-.subject-inputs {
-    max-height: 350px;
+.subject-inputs,
+.total-inputs {
+    max-height: 390px;
     overflow-y: auto;
     padding-right: 5px;
 }
 
-.subject-inputs::-webkit-scrollbar {
+.subject-inputs::-webkit-scrollbar,
+.total-inputs::-webkit-scrollbar {
     width: 6px;
 }
 
-.subject-inputs::-webkit-scrollbar-track {
+.subject-inputs::-webkit-scrollbar-track,
+.total-inputs::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 10px;
 }
 
-.subject-inputs::-webkit-scrollbar-thumb {
+.subject-inputs::-webkit-scrollbar-thumb,
+.total-inputs::-webkit-scrollbar-thumb {
     background: #667eea;
     border-radius: 10px;
 }
 
-.subject-inputs .input-group {
+.subject-row,
+.semester-row {
+    background: #f8f9fc;
+    border: 1px solid #e0e5ec;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.row-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #555;
     margin-bottom: 8px;
 }
 
-.subject-inputs .input-group input {
+.weighted-input-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 10px;
+}
+
+.weighted-input-grid input {
+    width: 100%;
     padding: 10px 12px;
+    border: 2px solid #e0e5ec;
+    border-radius: 10px;
     font-size: 14px;
+    background: white;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.weighted-input-grid input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+}
+
+.input-heading {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 10px;
+    margin-bottom: 8px;
+    padding: 0 12px;
+}
+
+.input-heading span {
+    font-size: 12px;
+    font-weight: 700;
+    color: #667eea;
 }
 
 .grade-scale {
@@ -316,104 +373,312 @@ h1 {
     .container {
         padding: 20px;
     }
-    
+
     .input-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .button-group button {
         font-size: 12px;
         padding: 10px 5px;
     }
-    
+
     .result-gpa {
         font-size: 28px;
     }
-    
+
     .grade-scale {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .weighted-input-grid {
+        grid-template-columns: 1fr 1fr;
     }
 }
 </style>
 </head>
+
 <body>
+
 <div class="container">
+
 <h1>🎓 Smart CGPA Calculator</h1>
 
 <div class="button-group">
-    <button id="subjectBtn" class="active" onclick="showSection('subject')">📝 Subject</button>
-    <button id="semesterBtn" onclick="showSection('semester')">📊 Semester</button>
-    <button id="totalBtn" onclick="showSection('total')">🎯 CGPA</button>
+    <button
+        id="subjectBtn"
+        class="active"
+        onclick="showSection('subject')"
+    >
+        📝 Subject
+    </button>
+
+    <button
+        id="semesterBtn"
+        onclick="showSection('semester')"
+    >
+        📊 Semester
+    </button>
+
+    <button
+        id="totalBtn"
+        onclick="showSection('total')"
+    >
+        🎯 CGPA
+    </button>
 </div>
 
-<!-- Subject GPA -->
+<!-- Subject GPA Section -->
 <div id="subject" class="section">
+
     <div class="grade-scale">
-        <div class="grade-item"><strong>A+</strong> 80-100%</div>
-        <div class="grade-item"><strong>A</strong> 70-79%</div>
-        <div class="grade-item"><strong>B</strong> 60-69%</div>
-        <div class="grade-item"><strong>C</strong> 50-59%</div>
+        <div class="grade-item">
+            <strong>A+</strong>
+            80-100%
+        </div>
+
+        <div class="grade-item">
+            <strong>A</strong>
+            70-79%
+        </div>
+
+        <div class="grade-item">
+            <strong>B</strong>
+            60-69%
+        </div>
+
+        <div class="grade-item">
+            <strong>C</strong>
+            50-59%
+        </div>
     </div>
-    
+
     <div class="input-group">
         <label>📝 Final Exam (50%)</label>
-        <input type="number" id="final" placeholder="Enter marks out of 50" min="0" max="50">
+        <input
+            type="number"
+            id="final"
+            placeholder="Enter marks out of 50"
+            min="0"
+            max="50"
+            step="0.01"
+        >
     </div>
+
     <div class="input-group">
         <label>📝 Mid Exam (30%)</label>
-        <input type="number" id="mid" placeholder="Enter marks out of 30" min="0" max="30">
+        <input
+            type="number"
+            id="mid"
+            placeholder="Enter marks out of 30"
+            min="0"
+            max="30"
+            step="0.01"
+        >
     </div>
+
     <div class="input-group">
         <label>📝 Sessional (20%)</label>
-        <input type="number" id="sessional" placeholder="Enter marks out of 20" min="0" max="20">
+        <input
+            type="number"
+            id="sessional"
+            placeholder="Enter marks out of 20"
+            min="0"
+            max="20"
+            step="0.01"
+        >
     </div>
-    <button class="calculate-btn" onclick="calculateSubjectGPA()">📊 Calculate GPA</button>
+
+    <button
+        class="calculate-btn"
+        onclick="calculateSubjectGPA()"
+    >
+        📊 Calculate GPA
+    </button>
+
     <div class="result-box" id="subjectResult">
-        <div class="result-gpa">GPA: <span id="subjectGPA">-</span></div>
-        <div class="result-detail" id="subjectDetail">Enter marks to calculate</div>
+        <div class="result-gpa">
+            GPA:
+            <span id="subjectGPA">-</span>
+        </div>
+
+        <div class="result-detail" id="subjectDetail">
+            Enter marks to calculate
+        </div>
     </div>
-    <div class="info-note">💡 Based on the university grading scale</div>
+
+    <div class="info-note">
+        💡 Based on the university grading scale
+    </div>
+
 </div>
 
-<!-- Semester GPA -->
-<div id="semester" class="section" style="display:none;">
-    <div class="info-note" style="margin-bottom:15px;">📌 Enter GPA for each subject (leave blank for zero-credit subjects)</div>
-    <div class="subject-inputs" id="semesterInputs"></div>
-    <button class="calculate-btn" onclick="calculateSemesterGPA()">📊 Calculate SGPA</button>
+<!-- Semester SGPA Section -->
+<div
+    id="semester"
+    class="section"
+    style="display:none;"
+>
+
+    <div
+        class="info-note"
+        style="margin-bottom:15px;"
+    >
+        📌 Enter the GPA and credit hours of every subject.
+        Leave both fields blank to exclude a subject.
+    </div>
+
+    <div class="input-heading">
+        <span>Subject GPA</span>
+        <span>Credit Hours</span>
+    </div>
+
+    <div
+        class="subject-inputs"
+        id="semesterInputs"
+    ></div>
+
+    <button
+        class="calculate-btn"
+        onclick="calculateSemesterGPA()"
+    >
+        📊 Calculate SGPA
+    </button>
+
     <div class="result-box" id="semesterResult">
-        <div class="result-gpa">SGPA: <span id="semesterGPA">-</span></div>
-        <div class="result-detail" id="semesterDetail">Enter subject GPAs to calculate</div>
+
+        <div class="result-gpa">
+            SGPA:
+            <span id="semesterGPA">-</span>
+        </div>
+
+        <div
+            class="result-detail"
+            id="semesterDetail"
+        >
+            Enter subject GPAs and credit hours
+        </div>
+
     </div>
-    <div class="info-note">📐 SGPA = Sum of Subject GPAs ÷ Number of Subjects</div>
+
+    <div class="info-note">
+        📐 SGPA = Sum of (Subject GPA × Credit Hours)
+        ÷ Total Subject Credit Hours
+    </div>
+
 </div>
 
-<!-- Total CGPA -->
-<div id="total" class="section" style="display:none;">
-    <div class="info-note" style="margin-bottom:15px;">📌 Enter SGPA for each semester (leave blank for incomplete semesters)</div>
-    <div id="totalInputs"></div>
-    <button class="calculate-btn" onclick="calculateTotalCGPA()">🎯 Calculate CGPA</button>
-    <div class="result-box" id="totalResult">
-        <div class="result-gpa">CGPA: <span id="totalGPA">-</span></div>
-        <div class="result-detail" id="totalDetail">Enter semester SGPAs to calculate</div>
+<!-- Total CGPA Section -->
+<div
+    id="total"
+    class="section"
+    style="display:none;"
+>
+
+    <div
+        class="info-note"
+        style="margin-bottom:15px;"
+    >
+        📌 Enter each semester SGPA and its total credit hours.
+        Leave both fields blank for incomplete semesters.
     </div>
-    <div class="info-note">📐 CGPA = Sum of Semester SGPAs ÷ Number of Semesters</div>
+
+    <div class="input-heading">
+        <span>Semester SGPA</span>
+        <span>Credit Hours</span>
+    </div>
+
+    <div
+        class="total-inputs"
+        id="totalInputs"
+    ></div>
+
+    <button
+        class="calculate-btn"
+        onclick="calculateTotalCGPA()"
+    >
+        🎯 Calculate CGPA
+    </button>
+
+    <div class="result-box" id="totalResult">
+
+        <div class="result-gpa">
+            CGPA:
+            <span id="totalGPA">-</span>
+        </div>
+
+        <div
+            class="result-detail"
+            id="totalDetail"
+        >
+            Enter semester SGPAs and credit hours
+        </div>
+
+    </div>
+
+    <div class="info-note">
+        📐 CGPA = Sum of (Semester SGPA × Semester Credit Hours)
+        ÷ Total Credit Hours
+    </div>
+
 </div>
+
 </div>
 
 <script>
-// Show section
-function showSection(section){
-    document.querySelectorAll('.section').forEach(s => s.style.display='none');
-    document.getElementById(section).style.display='block';
-    document.querySelectorAll('.button-group button').forEach(b=>b.classList.remove('active'));
-    if(section==='subject') document.getElementById('subjectBtn').classList.add('active');
-    if(section==='semester') document.getElementById('semesterBtn').classList.add('active');
-    if(section==='total') document.getElementById('totalBtn').classList.add('active');
+
+/*
+|--------------------------------------------------------------------------
+| Show Selected Section
+|--------------------------------------------------------------------------
+*/
+
+function showSection(section) {
+
+    document
+        .querySelectorAll('.section')
+        .forEach(currentSection => {
+            currentSection.style.display = 'none';
+        });
+
+    document.getElementById(section).style.display = 'block';
+
+    document
+        .querySelectorAll('.button-group button')
+        .forEach(button => {
+            button.classList.remove('active');
+        });
+
+    if (section === 'subject') {
+        document
+            .getElementById('subjectBtn')
+            .classList.add('active');
+    }
+
+    if (section === 'semester') {
+        document
+            .getElementById('semesterBtn')
+            .classList.add('active');
+    }
+
+    if (section === 'total') {
+        document
+            .getElementById('totalBtn')
+            .classList.add('active');
+    }
 }
 
-// Subject GPA grading system
+
+/*
+|--------------------------------------------------------------------------
+| Subject GPA Grading System
+|--------------------------------------------------------------------------
+*/
+
 function calculateGPA(total) {
+
     const rounded = Math.round(total);
+
     if (rounded >= 80) return 4.0;
     else if (rounded === 79) return 3.9;
     else if (rounded === 78) return 3.9;
@@ -445,133 +710,609 @@ function calculateGPA(total) {
     else if (rounded === 52) return 2.1;
     else if (rounded === 51) return 2.1;
     else if (rounded === 50) return 2.0;
-    else return 0.0;
+
+    return 0.0;
 }
 
-// Calculate Subject GPA
-function calculateSubjectGPA(){
-    const final = parseFloat(document.getElementById('final').value) || 0;
-    const mid = parseFloat(document.getElementById('mid').value) || 0;
-    const sessional = parseFloat(document.getElementById('sessional').value) || 0;
-    const total = final + mid + sessional;
-    const gpa = calculateGPA(total);
-    
-    document.getElementById('subjectGPA').textContent = gpa.toFixed(2);
-    document.getElementById('subjectDetail').innerHTML = `Total: ${total}/100 | Grade: ${getGrade(total)}`;
-    
-    // Color code the result
-    const resultBox = document.getElementById('subjectResult');
-    resultBox.style.borderColor = gpa >= 3.0 ? '#28a745' : gpa >= 2.0 ? '#ffc107' : '#dc3545';
-}
+
+/*
+|--------------------------------------------------------------------------
+| Get Grade Letter
+|--------------------------------------------------------------------------
+*/
 
 function getGrade(total) {
+
     const rounded = Math.round(total);
+
     if (rounded >= 80) return 'A+';
     else if (rounded >= 70) return 'A';
     else if (rounded >= 60) return 'B';
     else if (rounded >= 50) return 'C';
-    else return 'F';
+
+    return 'F';
 }
 
-// Generate semester inputs
-const semesterContainer = document.getElementById('semesterInputs');
-for(let i=1; i<=10; i++){
+
+/*
+|--------------------------------------------------------------------------
+| Validate Marks
+|--------------------------------------------------------------------------
+*/
+
+function isValidMarks(value, maximum) {
+
+    return (
+        Number.isFinite(value) &&
+        value >= 0 &&
+        value <= maximum
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Calculate Subject GPA
+|--------------------------------------------------------------------------
+*/
+
+function calculateSubjectGPA() {
+
+    const finalInput =
+        document.getElementById('final').value.trim();
+
+    const midInput =
+        document.getElementById('mid').value.trim();
+
+    const sessionalInput =
+        document.getElementById('sessional').value.trim();
+
+    if (
+        finalInput === '' &&
+        midInput === '' &&
+        sessionalInput === ''
+    ) {
+        showSubjectError('⚠️ Enter marks before calculating GPA.');
+        return;
+    }
+
+    const finalMarks =
+        finalInput === '' ? 0 : Number(finalInput);
+
+    const midMarks =
+        midInput === '' ? 0 : Number(midInput);
+
+    const sessionalMarks =
+        sessionalInput === '' ? 0 : Number(sessionalInput);
+
+    if (!isValidMarks(finalMarks, 50)) {
+        showSubjectError(
+            '⚠️ Final Exam marks must be between 0 and 50.'
+        );
+        return;
+    }
+
+    if (!isValidMarks(midMarks, 30)) {
+        showSubjectError(
+            '⚠️ Mid Exam marks must be between 0 and 30.'
+        );
+        return;
+    }
+
+    if (!isValidMarks(sessionalMarks, 20)) {
+        showSubjectError(
+            '⚠️ Sessional marks must be between 0 and 20.'
+        );
+        return;
+    }
+
+    const total =
+        finalMarks +
+        midMarks +
+        sessionalMarks;
+
+    const gpa = calculateGPA(total);
+    const grade = getGrade(total);
+
+    document
+        .getElementById('subjectGPA')
+        .textContent = gpa.toFixed(2);
+
+    document
+        .getElementById('subjectDetail')
+        .innerHTML =
+        `Total Marks: <span class="highlight">${total.toFixed(2)}/100</span>` +
+        `<br>Grade: <span class="highlight">${grade}</span>`;
+
+    setResultColor('subjectResult', gpa);
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Show Subject Error
+|--------------------------------------------------------------------------
+*/
+
+function showSubjectError(message) {
+
+    document
+        .getElementById('subjectGPA')
+        .textContent = '-';
+
+    document
+        .getElementById('subjectDetail')
+        .innerHTML = message;
+
+    document
+        .getElementById('subjectResult')
+        .style.borderColor = '#dc3545';
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Generate Semester Subject Inputs
+|--------------------------------------------------------------------------
+*/
+
+const semesterContainer =
+    document.getElementById('semesterInputs');
+
+for (let i = 1; i <= 10; i++) {
+
     semesterContainer.innerHTML += `
-        <div class="input-group">
-            <input type="number" placeholder="Subject ${i} GPA" min="0" max="4" step="0.01">
+        <div class="subject-row">
+
+            <div class="row-title">
+                Subject ${i}
+            </div>
+
+            <div class="weighted-input-grid">
+
+                <input
+                    type="number"
+                    class="subject-gpa"
+                    placeholder="GPA, e.g. 3.50"
+                    min="0"
+                    max="4"
+                    step="0.01"
+                    aria-label="Subject ${i} GPA"
+                >
+
+                <input
+                    type="number"
+                    class="subject-credit"
+                    placeholder="CH"
+                    min="0"
+                    step="0.5"
+                    aria-label="Subject ${i} credit hours"
+                >
+
+            </div>
+
         </div>
     `;
 }
 
-// Generate total CGPA inputs
-const totalContainer = document.getElementById('totalInputs');
-for(let i=1; i<=8; i++){
+
+/*
+|--------------------------------------------------------------------------
+| Generate Semester CGPA Inputs
+|--------------------------------------------------------------------------
+*/
+
+const totalContainer =
+    document.getElementById('totalInputs');
+
+for (let i = 1; i <= 8; i++) {
+
     totalContainer.innerHTML += `
-        <div class="input-group">
-            <input type="number" placeholder="Semester ${i} SGPA" min="0" max="4" step="0.01">
+        <div class="semester-row">
+
+            <div class="row-title">
+                Semester ${i}
+            </div>
+
+            <div class="weighted-input-grid">
+
+                <input
+                    type="number"
+                    class="semester-sgpa"
+                    placeholder="SGPA, e.g. 3.50"
+                    min="0"
+                    max="4"
+                    step="0.01"
+                    aria-label="Semester ${i} SGPA"
+                >
+
+                <input
+                    type="number"
+                    class="semester-credit"
+                    placeholder="CH"
+                    min="0"
+                    step="0.5"
+                    aria-label="Semester ${i} credit hours"
+                >
+
+            </div>
+
         </div>
     `;
 }
 
-// Semester GPA calculation
-function calculateSemesterGPA(){
-    const inputs = document.querySelectorAll('#semesterInputs input');
-    let valid = [];
-    let zeroCreditCount = 0;
-    
-    inputs.forEach(input=>{
-        const val = parseFloat(input.value);
-        if(input.value.trim() === '') {
-            zeroCreditCount++;
+
+/*
+|--------------------------------------------------------------------------
+| Calculate Weighted Semester GPA
+|--------------------------------------------------------------------------
+|
+| SGPA =
+| Sum of (Subject GPA × Credit Hours)
+| -----------------------------------
+| Total Credit Hours
+|
+*/
+
+function calculateSemesterGPA() {
+
+    const subjectRows =
+        document.querySelectorAll('#semesterInputs .subject-row');
+
+    let totalQualityPoints = 0;
+    let totalCreditHours = 0;
+    let includedSubjects = 0;
+    let excludedSubjects = 0;
+
+    for (const row of subjectRows) {
+
+        const gpaInput =
+            row.querySelector('.subject-gpa');
+
+        const creditInput =
+            row.querySelector('.subject-credit');
+
+        const gpaText =
+            gpaInput.value.trim();
+
+        const creditText =
+            creditInput.value.trim();
+
+        /*
+        Exclude a completely blank subject row.
+        */
+        if (gpaText === '' && creditText === '') {
+            excludedSubjects++;
+            continue;
+        }
+
+        /*
+        Require both GPA and credit hours.
+        */
+        if (gpaText === '' || creditText === '') {
+            showSemesterError(
+                '⚠️ Enter both GPA and credit hours for every included subject.'
+            );
             return;
         }
-        if(!isNaN(val) && val >= 0 && val <= 4) {
-            valid.push(val);
+
+        const gpa = Number(gpaText);
+        const creditHours = Number(creditText);
+
+        if (
+            !Number.isFinite(gpa) ||
+            gpa < 0 ||
+            gpa > 4
+        ) {
+            showSemesterError(
+                '⚠️ Every subject GPA must be between 0.00 and 4.00.'
+            );
+            return;
         }
-    });
-    
-    if(valid.length === 0){
-        document.getElementById('semesterGPA').textContent = '-';
-        document.getElementById('semesterDetail').innerHTML = '⚠️ Enter at least 1 valid subject GPA';
+
+        if (
+            !Number.isFinite(creditHours) ||
+            creditHours <= 0
+        ) {
+            showSemesterError(
+                '⚠️ Credit hours must be greater than zero.'
+            );
+            return;
+        }
+
+        const qualityPoints =
+            gpa * creditHours;
+
+        totalQualityPoints += qualityPoints;
+        totalCreditHours += creditHours;
+        includedSubjects++;
+    }
+
+    if (
+        includedSubjects === 0 ||
+        totalCreditHours === 0
+    ) {
+        showSemesterError(
+            '⚠️ Enter at least one subject GPA and its credit hours.'
+        );
         return;
     }
-    
-    const sum = valid.reduce((a,b) => a + b, 0);
-    const totalSubjects = valid.length;
-    const avg = sum / totalSubjects;
-    const roundedAvg = Math.round(avg * 100) / 100;
-    
-    document.getElementById('semesterGPA').textContent = roundedAvg.toFixed(2);
-    let detail = `📊 ${valid.length} subjects | Sum: ${sum.toFixed(2)} ÷ ${totalSubjects} = ${roundedAvg.toFixed(2)}`;
-    if(zeroCreditCount > 0) {
-        detail += `<br>⏭️ ${zeroCreditCount} zero-credit/excluded subjects`;
+
+    const sgpa =
+        totalQualityPoints / totalCreditHours;
+
+    const roundedSGPA =
+        Math.round((sgpa + Number.EPSILON) * 100) / 100;
+
+    document
+        .getElementById('semesterGPA')
+        .textContent = roundedSGPA.toFixed(2);
+
+    let detail = `
+        Included Subjects:
+        <span class="highlight">${includedSubjects}</span>
+        <br>
+
+        Total Quality Points:
+        <span class="highlight">
+            ${totalQualityPoints.toFixed(2)}
+        </span>
+        <br>
+
+        Total Credit Hours:
+        <span class="highlight">
+            ${totalCreditHours.toFixed(2)}
+        </span>
+        <br>
+
+        Calculation:
+        ${totalQualityPoints.toFixed(2)}
+        ÷
+        ${totalCreditHours.toFixed(2)}
+        =
+        <span class="highlight">
+            ${roundedSGPA.toFixed(2)}
+        </span>
+    `;
+
+    if (excludedSubjects > 0) {
+        detail += `
+            <br>
+            ⏭️ ${excludedSubjects}
+            blank subject row(s) excluded
+        `;
     }
-    document.getElementById('semesterDetail').innerHTML = detail;
-    
-    // Color code
-    const resultBox = document.getElementById('semesterResult');
-    resultBox.style.borderColor = roundedAvg >= 3.0 ? '#28a745' : roundedAvg >= 2.0 ? '#ffc107' : '#dc3545';
+
+    document
+        .getElementById('semesterDetail')
+        .innerHTML = detail;
+
+    setResultColor(
+        'semesterResult',
+        roundedSGPA
+    );
 }
 
-// Total CGPA calculation
-function calculateTotalCGPA(){
-    const inputs = document.querySelectorAll('#totalInputs input');
-    let valid = [];
-    let emptyCount = 0;
-    
-    inputs.forEach(input=>{
-        const val = parseFloat(input.value);
-        if(input.value.trim() === '') {
-            emptyCount++;
+
+/*
+|--------------------------------------------------------------------------
+| Show Semester Error
+|--------------------------------------------------------------------------
+*/
+
+function showSemesterError(message) {
+
+    document
+        .getElementById('semesterGPA')
+        .textContent = '-';
+
+    document
+        .getElementById('semesterDetail')
+        .innerHTML = message;
+
+    document
+        .getElementById('semesterResult')
+        .style.borderColor = '#dc3545';
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Calculate Weighted CGPA
+|--------------------------------------------------------------------------
+|
+| CGPA =
+| Sum of (Semester SGPA × Semester Credit Hours)
+| ----------------------------------------------
+| Total Semester Credit Hours
+|
+*/
+
+function calculateTotalCGPA() {
+
+    const semesterRows =
+        document.querySelectorAll('#totalInputs .semester-row');
+
+    let totalQualityPoints = 0;
+    let totalCreditHours = 0;
+    let includedSemesters = 0;
+    let excludedSemesters = 0;
+
+    for (const row of semesterRows) {
+
+        const sgpaInput =
+            row.querySelector('.semester-sgpa');
+
+        const creditInput =
+            row.querySelector('.semester-credit');
+
+        const sgpaText =
+            sgpaInput.value.trim();
+
+        const creditText =
+            creditInput.value.trim();
+
+        /*
+        Exclude a completely blank semester.
+        */
+        if (sgpaText === '' && creditText === '') {
+            excludedSemesters++;
+            continue;
+        }
+
+        /*
+        Require both SGPA and semester credit hours.
+        */
+        if (sgpaText === '' || creditText === '') {
+            showCGPAError(
+                '⚠️ Enter both SGPA and credit hours for every included semester.'
+            );
             return;
         }
-        if(!isNaN(val) && val >= 0 && val <= 4) {
-            valid.push(val);
+
+        const sgpa = Number(sgpaText);
+        const creditHours = Number(creditText);
+
+        if (
+            !Number.isFinite(sgpa) ||
+            sgpa < 0 ||
+            sgpa > 4
+        ) {
+            showCGPAError(
+                '⚠️ Every semester SGPA must be between 0.00 and 4.00.'
+            );
+            return;
         }
-    });
-    
-    if(valid.length === 0){
-        document.getElementById('totalGPA').textContent = '-';
-        document.getElementById('totalDetail').innerHTML = '⚠️ Enter at least 1 valid semester SGPA';
+
+        if (
+            !Number.isFinite(creditHours) ||
+            creditHours <= 0
+        ) {
+            showCGPAError(
+                '⚠️ Semester credit hours must be greater than zero.'
+            );
+            return;
+        }
+
+        const qualityPoints =
+            sgpa * creditHours;
+
+        totalQualityPoints += qualityPoints;
+        totalCreditHours += creditHours;
+        includedSemesters++;
+    }
+
+    if (
+        includedSemesters === 0 ||
+        totalCreditHours === 0
+    ) {
+        showCGPAError(
+            '⚠️ Enter at least one semester SGPA and its credit hours.'
+        );
         return;
     }
-    
-    const sum = valid.reduce((a,b) => a + b, 0);
-    const totalSemesters = valid.length;
-    const avg = sum / totalSemesters;
-    const roundedAvg = Math.round(avg * 100) / 100;
-    
-    document.getElementById('totalGPA').textContent = roundedAvg.toFixed(2);
-    let detail = `📊 ${valid.length} semesters | Sum: ${sum.toFixed(2)} ÷ ${totalSemesters} = ${roundedAvg.toFixed(2)}`;
-    if(emptyCount > 0) {
-        detail += `<br>⏭️ ${emptyCount} semesters not included`;
+
+    const cgpa =
+        totalQualityPoints / totalCreditHours;
+
+    const roundedCGPA =
+        Math.round((cgpa + Number.EPSILON) * 100) / 100;
+
+    document
+        .getElementById('totalGPA')
+        .textContent = roundedCGPA.toFixed(2);
+
+    let detail = `
+        Included Semesters:
+        <span class="highlight">${includedSemesters}</span>
+        <br>
+
+        Total Quality Points:
+        <span class="highlight">
+            ${totalQualityPoints.toFixed(2)}
+        </span>
+        <br>
+
+        Total Credit Hours:
+        <span class="highlight">
+            ${totalCreditHours.toFixed(2)}
+        </span>
+        <br>
+
+        Calculation:
+        ${totalQualityPoints.toFixed(2)}
+        ÷
+        ${totalCreditHours.toFixed(2)}
+        =
+        <span class="highlight">
+            ${roundedCGPA.toFixed(2)}
+        </span>
+    `;
+
+    if (excludedSemesters > 0) {
+        detail += `
+            <br>
+            ⏭️ ${excludedSemesters}
+            incomplete semester(s) excluded
+        `;
     }
-    document.getElementById('totalDetail').innerHTML = detail;
-    
-    // Color code
-    const resultBox = document.getElementById('totalResult');
-    resultBox.style.borderColor = roundedAvg >= 3.0 ? '#28a745' : roundedAvg >= 2.0 ? '#ffc107' : '#dc3545';
+
+    document
+        .getElementById('totalDetail')
+        .innerHTML = detail;
+
+    setResultColor(
+        'totalResult',
+        roundedCGPA
+    );
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| Show CGPA Error
+|--------------------------------------------------------------------------
+*/
+
+function showCGPAError(message) {
+
+    document
+        .getElementById('totalGPA')
+        .textContent = '-';
+
+    document
+        .getElementById('totalDetail')
+        .innerHTML = message;
+
+    document
+        .getElementById('totalResult')
+        .style.borderColor = '#dc3545';
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Result Border Color
+|--------------------------------------------------------------------------
+*/
+
+function setResultColor(elementId, gpa) {
+
+    const resultBox =
+        document.getElementById(elementId);
+
+    if (gpa >= 3.0) {
+        resultBox.style.borderColor = '#28a745';
+    }
+    else if (gpa >= 2.0) {
+        resultBox.style.borderColor = '#ffc107';
+    }
+    else {
+        resultBox.style.borderColor = '#dc3545';
+    }
+}
+
 </script>
+
 </body>
 </html>
