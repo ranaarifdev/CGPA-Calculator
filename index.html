@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart CGPA Calculator</title>
+<style>
+:root{--primary:#4f46e5;--primary-dark:#3730a3;--accent:#06b6d4;--ink:#172033;--muted:#64748b;--line:#dce3ef;--surface:#fff;--soft:#f5f7fb}
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:Inter,'Segoe UI',Tahoma,sans-serif;color:var(--ink);background:radial-gradient(circle at 10% 0%,rgba(6,182,212,.24),transparent 32%),radial-gradient(circle at 100% 15%,rgba(79,70,229,.28),transparent 36%),#eef2ff;min-height:100vh;padding:clamp(12px,3vw,38px)}
+button,input,select{font:inherit}
+button{-webkit-tap-highlight-color:transparent}
+.container{background:rgba(255,255,255,.97);width:min(100%,1100px);margin:0 auto;padding:clamp(18px,4vw,42px);border:1px solid rgba(255,255,255,.8);border-radius:clamp(18px,3vw,30px);box-shadow:0 24px 70px rgba(51,65,140,.18)}
+.app-header{text-align:center;margin-bottom:clamp(22px,4vw,36px)}
+h1{font-size:clamp(1.65rem,4vw,2.5rem);line-height:1.15;font-weight:850;letter-spacing:-.04em;background:linear-gradient(120deg,var(--primary),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.app-subtitle{color:var(--muted);font-size:clamp(.86rem,2vw,1rem);margin-top:9px}
+.button-group{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:clamp(22px,4vw,34px);padding:6px;background:#eef1f8;border-radius:16px}
+.button-group button{min-height:50px;padding:11px 12px;border:0;border-radius:11px;cursor:pointer;font-weight:750;font-size:.9rem;background:transparent;color:#526078;transition:background .2s,color .2s,box-shadow .2s,transform .2s}
+.button-group button:hover{color:var(--primary);background:rgba(255,255,255,.7)}
+.button-group button:focus-visible,.calculate-btn:focus-visible{outline:3px solid rgba(6,182,212,.38);outline-offset:2px}
+.button-group button.active{background:var(--surface);color:var(--primary);box-shadow:0 5px 16px rgba(36,49,90,.1)}
+.section{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.input-group{margin-bottom:16px}
+.input-group label{display:block;font-size:.82rem;font-weight:750;color:#46536a;margin-bottom:7px}
+.input-group input,.input-group select,.weighted-input-grid input{width:100%;min-height:48px;padding:11px 14px;border:1.5px solid var(--line);border-radius:11px;font-size:1rem;background:var(--soft);color:var(--ink);transition:border-color .2s,box-shadow .2s,background .2s}
+.input-group input:focus,.input-group select:focus,.weighted-input-grid input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(79,70,229,.11);background:#fff}
+.calculate-btn{width:100%;min-height:52px;padding:14px;border:0;border-radius:12px;background:linear-gradient(120deg,var(--primary),#6366f1);color:#fff;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 10px 22px rgba(79,70,229,.22);margin-top:8px;transition:transform .2s,box-shadow .2s}
+.calculate-btn:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(79,70,229,.3)}
+.calculate-btn:active{transform:translateY(0)}
+.result-box{margin-top:20px;padding:clamp(18px,3vw,26px);border-radius:14px;background:linear-gradient(135deg,#f8faff,#eef2ff);border:1.5px solid var(--line);min-height:104px;display:flex;flex-direction:column;justify-content:center}
+.result-gpa{font-size:clamp(1.65rem,4vw,2.2rem);font-weight:850;text-align:center;margin-bottom:6px}
+.result-gpa span{color:var(--primary)}
+.result-detail{font-size:.9rem;color:var(--muted);text-align:center;line-height:1.65}
+.highlight{color:var(--primary);font-weight:750}
+.info-note{font-size:.8rem;color:#5e6c82;margin-top:14px;text-align:center;padding:12px 14px;background:#f3f6fb;border-radius:10px;border-left:3px solid var(--accent);line-height:1.55}
+.subject-inputs,.total-inputs{max-height:430px;overflow-y:auto;padding-right:6px;scrollbar-color:#a9b4ce transparent}
+.subject-row,.semester-row{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:10px}
+.row-title{font-size:.8rem;font-weight:800;color:#526078;margin-bottom:8px}
+.weighted-input-grid,.input-heading{display:grid;grid-template-columns:minmax(0,2fr) minmax(100px,1fr);gap:10px}
+.input-heading{margin-bottom:8px;padding:0 13px}
+.input-heading span{font-size:.75rem;font-weight:800;color:var(--primary)}
+.grade-scale{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.grade-item{background:var(--soft);padding:12px 8px;border-radius:11px;text-align:center;font-size:.76rem;color:var(--muted);border:1px solid var(--line)}
+.grade-item strong{display:block;font-size:1.15rem;color:var(--primary);margin-bottom:2px}
+.course-tools{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:18px}
+.program-tabs{display:flex;gap:8px;overflow-x:auto;padding:3px 2px 12px;margin-bottom:14px;scrollbar-color:#a9b4ce transparent}
+.program-tab{flex:0 0 auto;min-height:42px;padding:9px 14px;border:1px solid var(--line);border-radius:999px;background:var(--soft);color:#526078;font-size:.78rem;font-weight:800;cursor:pointer;transition:.2s}
+.program-tab:hover{border-color:#a5b4fc;color:var(--primary)}
+.program-tab.active{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 7px 15px rgba(79,70,229,.2)}
+.program-tab:focus-visible{outline:3px solid rgba(6,182,212,.38);outline-offset:2px}
+.program-heading{margin-bottom:16px}.program-heading h2{font-size:clamp(1.15rem,3vw,1.45rem);letter-spacing:-.02em}.program-heading p{color:var(--muted);font-size:.82rem;margin-top:5px}
+.course-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.summary-card{background:linear-gradient(145deg,#f8faff,#eef2ff);border:1px solid var(--line);border-radius:13px;padding:15px 10px;text-align:center}
+.summary-card strong{display:block;color:var(--primary);font-size:1.45rem;margin-bottom:3px}
+.summary-card span{font-size:.76rem;color:var(--muted)}
+.course-table-wrapper{max-height:540px;overflow:auto;border:1px solid var(--line);border-radius:14px;-webkit-overflow-scrolling:touch}
+.course-table{width:100%;border-collapse:collapse;min-width:760px}
+.course-table th{position:sticky;top:0;z-index:2;background:var(--primary-dark);color:#fff;text-align:left;padding:14px 12px;font-size:.78rem}
+.course-table td{padding:12px;border-bottom:1px solid #e9edf4;font-size:.82rem;color:#3e4a60;vertical-align:top}
+.course-table tbody tr:nth-child(even){background:#f8faff}
+.course-table tbody tr:hover{background:#eef2ff}
+.category-badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#e7e9ff;color:#4338ca;font-weight:750;font-size:.68rem;white-space:nowrap}
+.no-results{padding:28px;text-align:center;color:var(--muted);font-weight:650}
+.developer-credit{text-align:center;margin-top:28px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:.8rem;font-weight:650}
+.developer-credit span{color:var(--primary);font-weight:850}
+@media(min-width:760px){#subject{display:grid;grid-template-columns:repeat(3,1fr);gap:0 16px}#subject .grade-scale,#subject .calculate-btn,#subject .result-box,#subject .info-note{grid-column:1/-1}}
+@media(max-width:700px){body{padding:0;background:#fff}.container{min-height:100vh;border:0;border-radius:0;box-shadow:none;padding:20px 15px 28px}.app-header{margin:6px 0 22px}.button-group{grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:22px}.button-group button{min-height:48px;font-size:.82rem;padding:9px 7px}.grade-scale{grid-template-columns:repeat(2,1fr);gap:8px}.course-tools{grid-template-columns:1fr;gap:0}.course-summary{gap:7px}.summary-card{padding:12px 5px}.summary-card strong{font-size:1.25rem}.summary-card span{font-size:.66rem}.course-table-wrapper{border-radius:10px}.developer-credit{line-height:1.6}}
+@media(max-width:390px){.weighted-input-grid{grid-template-columns:minmax(0,1.6fr) minmax(82px,1fr)}.input-heading{grid-template-columns:minmax(0,1.6fr) minmax(82px,1fr)}.subject-row,.semester-row{padding:10px}.input-group input,.input-group select,.weighted-input-grid input{font-size:16px;padding:10px}.course-summary{grid-template-columns:1fr}.summary-card{display:flex;align-items:center;justify-content:space-between;padding:11px 14px}.summary-card strong{margin:0;order:2}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="container">
+<header class="app-header">
+<h1>🎓 Smart CGPA Calculator</h1>
+<p class="app-subtitle">Plan your grades with clarity and confidence.</p>
+</header>
+
+<div class="button-group" role="tablist" aria-label="Calculator sections">
+<button type="button" role="tab" aria-selected="true" aria-controls="subject" id="subjectBtn" class="active" onclick="showSection('subject')">📝 Subject</button>
+<button type="button" role="tab" aria-selected="false" aria-controls="semester" id="semesterBtn" onclick="showSection('semester')">📊 Semester</button>
+<button type="button" role="tab" aria-selected="false" aria-controls="total" id="totalBtn" onclick="showSection('total')">🎯 CGPA</button>
+<button type="button" role="tab" aria-selected="false" aria-controls="courses" id="coursesBtn" onclick="showSection('courses')">📚 Courses</button>
+</div>
+
+<div id="subject" class="section">
+<div class="grade-scale">
+<div class="grade-item"><strong>A+</strong>80-100%</div>
+<div class="grade-item"><strong>A</strong>70-79%</div>
+<div class="grade-item"><strong>B</strong>60-69%</div>
+<div class="grade-item"><strong>C</strong>50-59%</div>
+</div>
+<div class="input-group"><label>📝 Final Exam (50%)</label><input type="number" id="final" placeholder="Enter marks out of 50" min="0" max="50" step="0.01"></div>
+<div class="input-group"><label>📝 Mid Exam (30%)</label><input type="number" id="mid" placeholder="Enter marks out of 30" min="0" max="30" step="0.01"></div>
+<div class="input-group"><label>📝 Sessional (20%)</label><input type="number" id="sessional" placeholder="Enter marks out of 20" min="0" max="20" step="0.01"></div>
+<button class="calculate-btn" onclick="calculateSubjectGPA()">📊 Calculate GPA</button>
+<div class="result-box" id="subjectResult"><div class="result-gpa">GPA: <span id="subjectGPA">-</span></div><div class="result-detail" id="subjectDetail">Enter marks to calculate</div></div>
+<div class="info-note">💡 Based on the university grading scale.</div>
+</div>
+
+<div id="semester" class="section" style="display:none">
+<div class="info-note" style="margin-bottom:15px">📌 Enter the GPA and credit hours of every subject. Leave both fields blank to exclude a subject.</div>
+<div class="input-heading"><span>Subject GPA</span><span>Credit Hours</span></div>
+<div class="subject-inputs" id="semesterInputs"></div>
+<button class="calculate-btn" onclick="calculateSemesterGPA()">📊 Calculate SGPA</button>
+<div class="result-box" id="semesterResult"><div class="result-gpa">SGPA: <span id="semesterGPA">-</span></div><div class="result-detail" id="semesterDetail">Enter subject GPAs and credit hours</div></div>
+<div class="info-note">📐 SGPA = Sum of (Subject GPA × Credit Hours) ÷ Total Subject Credit Hours</div>
+</div>
+
+<div id="total" class="section" style="display:none">
+<div class="info-note" style="margin-bottom:15px">📌 Enter each semester SGPA and its total credit hours. Leave both fields blank for incomplete semesters.</div>
+<div class="input-heading"><span>Semester SGPA</span><span>Credit Hours</span></div>
+<div class="total-inputs" id="totalInputs"></div>
+<button class="calculate-btn" onclick="calculateTotalCGPA()">🎯 Calculate CGPA</button>
+<div class="result-box" id="totalResult"><div class="result-gpa">CGPA: <span id="totalGPA">-</span></div><div class="result-detail" id="totalDetail">Enter semester SGPAs and credit hours</div></div>
+<div class="info-note">📐 CGPA = Sum of (Semester SGPA × Semester Credit Hours) ÷ Total Credit Hours</div>
+</div>
+
+<div id="courses" class="section" style="display:none">
+<div class="program-tabs" id="programTabs" role="tablist" aria-label="Degree programs"></div>
+<div class="program-heading"><h2 id="programName"></h2><p id="programDescription"></p></div>
+<div class="course-tools">
+<div class="input-group" style="margin-bottom:0"><label>🔎 Search Course</label><input type="text" id="courseSearch" placeholder="Search by name or code..." oninput="renderCourses()"></div>
+<div class="input-group" style="margin-bottom:0"><label>📂 Category</label><select id="categoryFilter" onchange="renderCourses()"><option value="All">All Categories</option></select></div>
+</div>
+<div class="course-summary">
+<div class="summary-card"><strong id="visibleCourses">0</strong><span>Visible Courses</span></div>
+<div class="summary-card"><strong id="visibleCredits">0</strong><span>Visible Credit Hours</span></div>
+<div class="summary-card"><strong id="programCredits">0</strong><span>Listed Credit Hours</span></div>
+</div>
+<div class="course-table-wrapper">
+<table class="course-table">
+<thead><tr><th>Sr. No.</th><th>Course Name</th><th>Course Code</th><th>Credit Hours</th><th>Category</th></tr></thead>
+<tbody id="courseTableBody"></tbody>
+</table>
+</div>
+</div>
+<footer class="developer-credit">Developed by <span>Muhammad Arif</span> &mdash; BS Cyber Security</footer>
+</div>
+
+<script>
+function showSection(section){
+document.querySelectorAll('.section').forEach(x=>x.style.display='none');
+document.getElementById(section).style.display='block';
+document.querySelectorAll('.button-group button').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-selected','false')});
+const map={subject:'subjectBtn',semester:'semesterBtn',total:'totalBtn',courses:'coursesBtn'};
+document.getElementById(map[section]).classList.add('active');
+document.getElementById(map[section]).setAttribute('aria-selected','true');
+if(section==='courses')renderCourses();
+}
+
+function calculateGPA(total){
+const r=Math.round(total);
+if(r>=80)return 4.0;if(r>=78)return 3.9;if(r===77)return 3.8;if(r>=75)return 3.7;if(r===74)return 3.6;if(r>=72)return 3.5;if(r===71)return 3.4;if(r>=69)return 3.3;if(r===68)return 3.2;if(r>=66)return 3.1;if(r===65)return 3.0;if(r>=63)return 2.9;if(r===62)return 2.8;if(r>=60)return 2.7;if(r===59)return 2.6;if(r>=57)return 2.5;if(r===56)return 2.4;if(r>=54)return 2.3;if(r===53)return 2.2;if(r>=51)return 2.1;if(r===50)return 2.0;return 0.0;
+}
+function getGrade(total){const r=Math.round(total);if(r>=80)return'A+';if(r>=70)return'A';if(r>=60)return'B';if(r>=50)return'C';return'F'}
+function valid(v,max){return Number.isFinite(v)&&v>=0&&v<=max}
+
+function calculateSubjectGPA(){
+const f=document.getElementById('final').value.trim(),m=document.getElementById('mid').value.trim(),s=document.getElementById('sessional').value.trim();
+if(f===''&&m===''&&s==='')return showSubjectError('⚠️ Enter marks before calculating GPA.');
+const fv=f===''?0:Number(f),mv=m===''?0:Number(m),sv=s===''?0:Number(s);
+if(!valid(fv,50))return showSubjectError('⚠️ Final Exam marks must be between 0 and 50.');
+if(!valid(mv,30))return showSubjectError('⚠️ Mid Exam marks must be between 0 and 30.');
+if(!valid(sv,20))return showSubjectError('⚠️ Sessional marks must be between 0 and 20.');
+const total=fv+mv+sv,gpa=calculateGPA(total);
+document.getElementById('subjectGPA').textContent=gpa.toFixed(2);
+document.getElementById('subjectDetail').innerHTML=`Total Marks: <span class="highlight">${total.toFixed(2)}/100</span><br>Grade: <span class="highlight">${getGrade(total)}</span>`;
+setResultColor('subjectResult',gpa);
+}
+function showSubjectError(msg){document.getElementById('subjectGPA').textContent='-';document.getElementById('subjectDetail').innerHTML=msg;document.getElementById('subjectResult').style.borderColor='#dc3545'}
+
+const semesterContainer=document.getElementById('semesterInputs');
+for(let i=1;i<=10;i++)semesterContainer.innerHTML+=`<div class="subject-row"><div class="row-title">Subject ${i}</div><div class="weighted-input-grid"><input type="number" class="subject-gpa" placeholder="GPA, e.g. 3.50" min="0" max="4" step="0.01"><input type="number" class="subject-credit" placeholder="CH" min="0" step="0.5"></div></div>`;
+
+const totalContainer=document.getElementById('totalInputs');
+for(let i=1;i<=8;i++)totalContainer.innerHTML+=`<div class="semester-row"><div class="row-title">Semester ${i}</div><div class="weighted-input-grid"><input type="number" class="semester-sgpa" placeholder="SGPA, e.g. 3.50" min="0" max="4" step="0.01"><input type="number" class="semester-credit" placeholder="CH" min="0" step="0.5"></div></div>`;
+
+function calculateSemesterGPA(){
+let qp=0,ch=0,included=0,excluded=0;
+for(const row of document.querySelectorAll('#semesterInputs .subject-row')){
+const g=row.querySelector('.subject-gpa').value.trim(),c=row.querySelector('.subject-credit').value.trim();
+if(g===''&&c===''){excluded++;continue}
+if(g===''||c==='')return showSemesterError('⚠️ Enter both GPA and credit hours for every included subject.');
+const gv=Number(g),cv=Number(c);
+if(!Number.isFinite(gv)||gv<0||gv>4)return showSemesterError('⚠️ Every subject GPA must be between 0.00 and 4.00.');
+if(!Number.isFinite(cv)||cv<=0)return showSemesterError('⚠️ Credit hours must be greater than zero.');
+qp+=gv*cv;ch+=cv;included++;
+}
+if(!included||!ch)return showSemesterError('⚠️ Enter at least one subject GPA and its credit hours.');
+const sgpa=Math.round(((qp/ch)+Number.EPSILON)*100)/100;
+document.getElementById('semesterGPA').textContent=sgpa.toFixed(2);
+document.getElementById('semesterDetail').innerHTML=`Included Subjects: <span class="highlight">${included}</span><br>Total Quality Points: <span class="highlight">${qp.toFixed(2)}</span><br>Total Credit Hours: <span class="highlight">${ch.toFixed(2)}</span><br>Calculation: ${qp.toFixed(2)} ÷ ${ch.toFixed(2)} = <span class="highlight">${sgpa.toFixed(2)}</span>${excluded?`<br>⏭️ ${excluded} blank subject row(s) excluded`:''}`;
+setResultColor('semesterResult',sgpa);
+}
+function showSemesterError(msg){document.getElementById('semesterGPA').textContent='-';document.getElementById('semesterDetail').innerHTML=msg;document.getElementById('semesterResult').style.borderColor='#dc3545'}
+
+function calculateTotalCGPA(){
+let qp=0,ch=0,included=0,excluded=0;
+for(const row of document.querySelectorAll('#totalInputs .semester-row')){
+const g=row.querySelector('.semester-sgpa').value.trim(),c=row.querySelector('.semester-credit').value.trim();
+if(g===''&&c===''){excluded++;continue}
+if(g===''||c==='')return showCGPAError('⚠️ Enter both SGPA and credit hours for every included semester.');
+const gv=Number(g),cv=Number(c);
+if(!Number.isFinite(gv)||gv<0||gv>4)return showCGPAError('⚠️ Every semester SGPA must be between 0.00 and 4.00.');
+if(!Number.isFinite(cv)||cv<=0)return showCGPAError('⚠️ Semester credit hours must be greater than zero.');
+qp+=gv*cv;ch+=cv;included++;
+}
+if(!included||!ch)return showCGPAError('⚠️ Enter at least one semester SGPA and its credit hours.');
+const cgpa=Math.round(((qp/ch)+Number.EPSILON)*100)/100;
+document.getElementById('totalGPA').textContent=cgpa.toFixed(2);
+document.getElementById('totalDetail').innerHTML=`Included Semesters: <span class="highlight">${included}</span><br>Total Quality Points: <span class="highlight">${qp.toFixed(2)}</span><br>Total Credit Hours: <span class="highlight">${ch.toFixed(2)}</span><br>Calculation: ${qp.toFixed(2)} ÷ ${ch.toFixed(2)} = <span class="highlight">${cgpa.toFixed(2)}</span>${excluded?`<br>⏭️ ${excluded} incomplete semester(s) excluded`:''}`;
+setResultColor('totalResult',cgpa);
+}
+function showCGPAError(msg){document.getElementById('totalGPA').textContent='-';document.getElementById('totalDetail').innerHTML=msg;document.getElementById('totalResult').style.borderColor='#dc3545'}
+function setResultColor(id,gpa){document.getElementById(id).style.borderColor=gpa>=3?'#28a745':gpa>=2?'#ffc107':'#dc3545'}
+
+const cyberSecurityCourses=[
+    {
+        "category": "Computing Core",
+        "code": "COSC-1102",
+        "name": "Programming Fundamentals",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-1202",
+        "name": "Programming Fundamentals (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-1103",
+        "name": "Object Oriented Programming",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-1203",
+        "name": "Object Oriented Programming (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-1104",
+        "name": "Database Systems",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-1204",
+        "name": "Database Systems (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-1105",
+        "name": "Digital Logic Design",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-1205",
+        "name": "Digital Logic Design (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-2106",
+        "name": "Data Structures",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-2206",
+        "name": "Data Structures (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-2107",
+        "name": "Information Security",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-2207",
+        "name": "Information Security (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-2108",
+        "name": "Artificial Intelligence",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-2208",
+        "name": "Artificial Intelligence (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-2109",
+        "name": "Computer Networks",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-2209",
+        "name": "Computer Networks (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-2110",
+        "name": "Software Engineering",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-2111",
+        "name": "Computer Organization & Assembly Language",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-2211",
+        "name": "Computer Organization & Assembly Language (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-3112",
+        "name": "Operating Systems",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-3212",
+        "name": "Operating Systems (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-4113",
+        "name": "Analysis of Algorithms",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-4314",
+        "name": "Final Year Project – I",
+        "creditText": "2 (0-2)",
+        "credit": 2.0
+    },
+    {
+        "category": "Computing Core",
+        "code": "COSC-4315",
+        "name": "Final Year Project – II",
+        "creditText": "4 (0-4)",
+        "credit": 4.0
+    },
+    {
+        "category": "Cyber Security Core",
+        "code": "CYSE-2131",
+        "name": "Cyber Security",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Core",
+        "code": "CYSE-2231",
+        "name": "Cyber Security (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Core",
+        "code": "CYSE-3132",
+        "name": "Information Assurance",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Core",
+        "code": "CYSE-3232",
+        "name": "Information Assurance (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Core",
+        "code": "CYSE-3133",
+        "name": "Network Security",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Core",
+        "code": "CYSE-3233",
+        "name": "Network Security (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Core",
+        "code": "CYSE-3134",
+        "name": "Secure Software Design and Development",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Core",
+        "code": "CYSE-3234",
+        "name": "Secure Software Design and Development (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Core",
+        "code": "CYSE-4135",
+        "name": "Digital Forensics",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Core",
+        "code": "CYSE-4235",
+        "name": "Digital Forensics (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Core",
+        "code": "CYSE-4136",
+        "name": "Parallel & Distributed Computing",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Core",
+        "code": "CYSE-4236",
+        "name": "Parallel & Distributed Computing (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3141",
+        "name": "Vulnerability Assessment & Reverse Engineering",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3241",
+        "name": "Vulnerability Assessment & Reverse Engineering (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3142",
+        "name": "Basic Electronics",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3242",
+        "name": "Basic Electronics (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3143",
+        "name": "Hardware Security",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3243",
+        "name": "Hardware Security (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3144",
+        "name": "Malware Analysis",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3244",
+        "name": "Malware Analysis (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3145",
+        "name": "Wireless and Mobile Security",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3245",
+        "name": "Wireless and Mobile Security (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3146",
+        "name": "Theory of Automata",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3147",
+        "name": "HCI & Computer Graphics",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3247",
+        "name": "HCI & Computer Graphics (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3148",
+        "name": "Penetration Testing",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3248",
+        "name": "Penetration Testing (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3149",
+        "name": "Computer Architecture",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3249",
+        "name": "Computer Architecture (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3150",
+        "name": "Advanced Digital Logic Design",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-3250",
+        "name": "Advanced Digital Logic Design (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-4151",
+        "name": "Embedded Systems",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-4251",
+        "name": "Embedded Systems (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-4152",
+        "name": "Cyber Law & Cyber Crime (Cyber Warfare)",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-4252",
+        "name": "Cyber Law & Cyber Crime (Cyber Warfare) (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-4153",
+        "name": "Control System Security",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "Cyber Security Elective",
+        "code": "CYSE-4253",
+        "name": "Control System Security (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "Mathematics & Supporting Courses",
+        "code": "MATH-3181",
+        "name": "Multivariable Calculus",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "Mathematics & Supporting Courses",
+        "code": "MATH-3182",
+        "name": "Linear Algebra",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "Mathematics & Supporting Courses",
+        "code": "STAT-2183",
+        "name": "Probability & Statistics",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "Mathematics & Supporting Courses",
+        "code": "ENGL-3184",
+        "name": "Technical & Business Writing",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "Elective Supporting Courses",
+        "code": "BUAD-2123",
+        "name": "Principles of Marketing",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "General Education",
+        "code": "COSC-1101",
+        "name": "Application of Information and Communication Technologies (ICT)",
+        "creditText": "3 (2-1)",
+        "credit": 3.0
+    },
+    {
+        "category": "General Education",
+        "code": "ENGL-1101",
+        "name": "Functional English",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "General Education",
+        "code": "ENGL-1102",
+        "name": "Expository Writing",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "General Education",
+        "code": "MATH-2101",
+        "name": "Quantitative Reasoning – I (Discrete Structure)",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "General Education",
+        "code": "STAT-2101",
+        "name": "Quantitative Reasoning – II (Calculus and Analytic Geometry)",
+        "creditText": "3 (3-0)",
+        "credit": 3.0
+    },
+    {
+        "category": "General Education",
+        "code": "ISST-1101",
+        "name": "Islamic Studies / Ethics (For Non-Muslims)",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "General Education",
+        "code": "POSC-1101",
+        "name": "Ideology & Constitution of Pakistan",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "General Education",
+        "code": "BUAD-1121",
+        "name": "Principles of Management (Social Sciences)",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "General Education",
+        "code": "PHYS-1103",
+        "name": "Applied Physics (Natural Sciences)",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "General Education",
+        "code": "PHYS-1203",
+        "name": "Applied Physics (Natural Sciences) (Lab)",
+        "creditText": "1 (0-1)",
+        "credit": 1.0
+    },
+    {
+        "category": "General Education",
+        "code": "COSC-2116",
+        "name": "Professional Practices (Arts & Humanities)",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "General Education",
+        "code": "SOCI-2101",
+        "name": "Civics and Community Engagement",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    },
+    {
+        "category": "General Education",
+        "code": "BUAD-2101",
+        "name": "Entrepreneurship",
+        "creditText": "2 (2-0)",
+        "credit": 2.0
+    }
+];
+
+// Reusable program model and repository. Add future curricula to `courses` only;
+// the tabs, filters, summaries, and table are shared by every degree program.
+const programs=[
+{id:'cyber-security',shortName:'Cyber Security',name:'BS Cyber Security',status:'available',courses:cyberSecurityCourses},
+{id:'artificial-intelligence',shortName:'Artificial Intelligence',name:'BS Artificial Intelligence',status:'coming-soon',courses:[]},
+{id:'computer-science',shortName:'Computer Science',name:'BS Computer Science',status:'coming-soon',courses:[]},
+{id:'software-engineering',shortName:'Software Engineering',name:'BS Software Engineering',status:'coming-soon',courses:[]},
+{id:'information-technology',shortName:'Information Technology',name:'BS Information Technology',status:'coming-soon',courses:[]},
+{id:'data-science',shortName:'Data Science',name:'BS Data Science',status:'coming-soon',courses:[]}
+];
+
+const curriculumRepository={
+getPrograms:()=>programs,
+getProgram:id=>programs.find(program=>program.id===id),
+getCourses:id=>curriculumRepository.getProgram(id)?.courses??[]
+};
+
+let selectedProgramId='cyber-security';
+
+function initializePrograms(){
+const tabs=document.getElementById('programTabs');
+tabs.innerHTML=curriculumRepository.getPrograms().map(program=>`<button type="button" class="program-tab" role="tab" aria-controls="courseTableBody" id="program-${program.id}" onclick="selectProgram('${program.id}')">${program.shortName}</button>`).join('');
+tabs.addEventListener('keydown',event=>{
+if(!['ArrowLeft','ArrowRight'].includes(event.key))return;
+const all=[...tabs.querySelectorAll('.program-tab')],current=all.indexOf(document.activeElement);
+if(current<0)return;
+event.preventDefault();
+const next=(current+(event.key==='ArrowRight'?1:-1)+all.length)%all.length;
+all[next].click();all[next].focus();
+});
+selectProgram(selectedProgramId);
+}
+
+function selectProgram(programId){
+selectedProgramId=programId;
+const program=curriculumRepository.getProgram(programId);
+document.querySelectorAll('.program-tab').forEach(tab=>{const active=tab.id===`program-${programId}`;tab.classList.toggle('active',active);tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1});
+document.getElementById('programName').textContent=program.name;
+document.getElementById('programDescription').textContent=program.status==='available'?'Complete curriculum with course codes, credit hours and categories.':'Curriculum data will be added soon. This program already uses the shared curriculum architecture.';
+document.getElementById('courseSearch').value='';
+initializeCourseFilters();
+}
+
+function initializeCourseFilters(){
+const courses=curriculumRepository.getCourses(selectedProgramId);
+const select=document.getElementById('categoryFilter');
+select.innerHTML='<option value="All">All Categories</option>';
+[...new Set(courses.map(x=>x.category))].forEach(category=>{
+const option=document.createElement('option');option.value=category;option.textContent=category;select.appendChild(option);
+});
+document.getElementById('programCredits').textContent=courses.reduce((total,course)=>total+course.credit,0).toFixed(0);
+renderCourses();
+}
+
+function renderCourses(){
+const courses=curriculumRepository.getCourses(selectedProgramId);
+const program=curriculumRepository.getProgram(selectedProgramId);
+const q=document.getElementById('courseSearch').value.trim().toLowerCase();
+const category=document.getElementById('categoryFilter').value;
+const filtered=courses.filter(x=>(category==='All'||x.category===category)&&(!q||x.name.toLowerCase().includes(q)||x.code.toLowerCase().includes(q)));
+const body=document.getElementById('courseTableBody');
+if(!filtered.length){
+body.innerHTML=`<tr><td colspan="5" class="no-results">${program.status==='coming-soon'?`Curriculum coming soon for ${program.name}.`:'No course found.'}</td></tr>`;
+}else{
+body.innerHTML=filtered.map((x,i)=>`<tr><td>${i+1}</td><td>${x.name}</td><td><strong>${x.code}</strong></td><td>${x.creditText}</td><td><span class="category-badge">${x.category}</span></td></tr>`).join('');
+}
+document.getElementById('visibleCourses').textContent=filtered.length;
+document.getElementById('visibleCredits').textContent=filtered.reduce((a,b)=>a+b.credit,0).toFixed(0);
+}
+initializePrograms();
+</script>
+</body>
+</html>
