@@ -57,7 +57,7 @@ for (const source of sourceFiles) {
 const pdfs = fs.readdirSync(root).filter(file => file.toLowerCase().endsWith('.pdf'));
 if (pdfs.length) fail(`PDF files must not be published: ${pdfs.join(', ')}`);
 
-for (const requiredText of ['Grading Scheme', 'SGPA =', 'CGPA =', '80 &amp; above', 'R/Repeat']) {
+for (const requiredText of ['Grading Scheme', 'GPA Calculation', 'SGPA =', 'CGPA =', '80 &amp; above', 'R/Repeat', 'Easy Difference Between SGPA and CGPA']) {
   if (!html.includes(requiredText)) fail(`Missing grading-scheme content: ${requiredText}`);
 }
 

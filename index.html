@@ -64,11 +64,20 @@ h1{font-size:clamp(1.65rem,4vw,2.5rem);line-height:1.15;font-weight:850;letter-s
 .category-badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#e7e9ff;color:#4338ca;font-weight:750;font-size:.68rem;white-space:nowrap}
 .no-results{padding:28px;text-align:center;color:var(--muted);font-weight:650}
 .scheme-intro{margin-bottom:18px;color:var(--muted);line-height:1.65}
+.scheme-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:6px;margin-bottom:18px;border-radius:14px;background:#eef1f8}
+.scheme-tab{min-height:46px;padding:10px 14px;border:0;border-radius:10px;background:transparent;color:#526078;font-weight:800;cursor:pointer}
+.scheme-tab:hover{color:var(--primary);background:rgba(255,255,255,.7)}
+.scheme-tab.active{color:var(--primary);background:#fff;box-shadow:0 5px 14px rgba(36,49,90,.1)}
+.scheme-tab:focus-visible{outline:3px solid rgba(6,182,212,.38);outline-offset:2px}
+.scheme-panel{animation:fadeIn .25s ease}
 .scheme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:20px}
 .scheme-card{padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--soft)}
 .scheme-card h3,.scheme-text h3{color:var(--primary-dark);font-size:1rem;margin-bottom:9px}
 .formula{padding:12px;border-radius:10px;background:#fff;border:1px solid var(--line);font-family:Consolas,monospace;font-weight:750;color:var(--primary);overflow-wrap:anywhere}
 .example{margin-top:10px;font-size:.84rem;color:#526078;line-height:1.65}
+.calculation-steps{margin-top:12px;padding-left:21px;color:#46536a;font-size:.86rem;line-height:1.7}
+.calculation-steps li+li{margin-top:5px}
+.formula-terms{margin-top:10px;padding:11px 13px;border-radius:10px;background:#eaf8fb;color:#3d5964;font-size:.82rem;line-height:1.65}
 .scheme-text{margin-top:20px;padding:clamp(16px,3vw,24px);border:1px solid var(--line);border-radius:14px;background:#fff}
 .scheme-text ol{padding-left:22px;color:#46536a;line-height:1.7}
 .scheme-text li+li{margin-top:10px}
@@ -152,21 +161,14 @@ h1{font-size:clamp(1.65rem,4vw,2.5rem);line-height:1.15;font-weight:850;letter-s
 </div>
 
 <div id="grading" class="section" style="display:none">
-<p class="scheme-intro">Official grading system, calculation formulas, and reporting rules. The grading table and regulations below are transcribed from the supplied grading-system document.</p>
+<p class="scheme-intro">Use the two sections below to understand the official grades and learn how semester GPA and cumulative GPA are calculated.</p>
 
-<div class="scheme-grid">
-<article class="scheme-card">
-<h3>Semester GPA / SGPA Formula</h3>
-<div class="formula">SGPA = Σ (Course Grade Point × Course Credit Hours) ÷ Σ Course Credit Hours</div>
-<p class="example"><strong>Example:</strong> Three courses have grade points and credits of 4.00 × 3, 3.50 × 3, and 3.00 × 2. Quality points = 12 + 10.5 + 6 = 28.5. Total credits = 8. <strong>SGPA = 28.5 ÷ 8 = 3.56.</strong></p>
-</article>
-<article class="scheme-card">
-<h3>Cumulative GPA / CGPA Formula</h3>
-<div class="formula">CGPA = Σ (Semester SGPA × Semester Credit Hours) ÷ Σ Semester Credit Hours</div>
-<p class="example"><strong>Example:</strong> Semester 1 has 3.40 SGPA over 15 credits and Semester 2 has 3.70 SGPA over 18 credits. Quality points = 51 + 66.6 = 117.6. Total credits = 33. <strong>CGPA = 117.6 ÷ 33 = 3.56.</strong></p>
-</article>
+<div class="scheme-tabs" role="tablist" aria-label="Grading scheme details">
+<button type="button" class="scheme-tab active" id="gradingDetailsBtn" role="tab" aria-selected="true" aria-controls="gradingDetails" onclick="showSchemePanel('gradingDetails')">📋 Grading</button>
+<button type="button" class="scheme-tab" id="gpaCalculationBtn" role="tab" aria-selected="false" aria-controls="gpaCalculation" onclick="showSchemePanel('gpaCalculation')">🧮 GPA Calculation</button>
 </div>
 
+<div id="gradingDetails" class="scheme-panel" role="tabpanel" aria-labelledby="gradingDetailsBtn">
 <h2 style="font-size:1.2rem;margin-bottom:12px">Marks, Grade Points, and Grades</h2>
 <div class="course-table-wrapper">
 <table class="course-table grading-table">
@@ -205,6 +207,62 @@ h1{font-size:clamp(1.65rem,4vw,2.5rem);line-height:1.15;font-weight:850;letter-s
 </ol>
 </article>
 </div>
+
+<div id="gpaCalculation" class="scheme-panel" role="tabpanel" aria-labelledby="gpaCalculationBtn" style="display:none">
+<div class="scheme-grid">
+<article class="scheme-card">
+<h3>Semester GPA (SGPA)</h3>
+<p class="example">SGPA shows your average performance in one semester. Courses with more credit hours have more effect on the result.</p>
+<div class="formula">SGPA = Total Course Quality Points ÷ Total Course Credit Hours</div>
+<div class="formula-terms"><strong>Course Quality Points</strong> = Course Grade Point × Course Credit Hours</div>
+<ol class="calculation-steps">
+<li>Multiply each course grade point by that course's credit hours.</li>
+<li>Add the quality points of all courses.</li>
+<li>Add the credit hours of all courses.</li>
+<li>Divide total quality points by total credit hours.</li>
+<li>Round the answer to two decimal places.</li>
+</ol>
+<p class="example"><strong>Example:</strong><br>
+Course 1: 4.00 × 3 credits = 12.00<br>
+Course 2: 3.50 × 3 credits = 10.50<br>
+Course 3: 3.00 × 2 credits = 6.00<br>
+Total quality points = 28.50<br>
+Total credit hours = 8<br>
+<strong>SGPA = 28.50 ÷ 8 = 3.5625 = 3.56</strong></p>
+</article>
+
+<article class="scheme-card">
+<h3>Cumulative GPA (CGPA)</h3>
+<p class="example">CGPA combines your completed semesters. A semester with more credit hours has more effect on the cumulative result.</p>
+<div class="formula">CGPA = Total Semester Quality Points ÷ Total Credit Hours</div>
+<div class="formula-terms"><strong>Semester Quality Points</strong> = Semester SGPA × Semester Credit Hours</div>
+<ol class="calculation-steps">
+<li>Multiply every semester's SGPA by its total credit hours.</li>
+<li>Add the quality points from all completed semesters.</li>
+<li>Add the credit hours from all completed semesters.</li>
+<li>Divide total semester quality points by total credit hours.</li>
+<li>Round the answer to two decimal places.</li>
+</ol>
+<p class="example"><strong>Example:</strong><br>
+Semester 1: 3.40 × 15 credits = 51.00<br>
+Semester 2: 3.70 × 18 credits = 66.60<br>
+Total quality points = 117.60<br>
+Total credit hours = 33<br>
+<strong>CGPA = 117.60 ÷ 33 = 3.5636 = 3.56</strong></p>
+</article>
+</div>
+
+<article class="scheme-text">
+<h3>Easy Difference Between SGPA and CGPA</h3>
+<ol>
+<li><strong>SGPA</strong> uses individual course grade points and credit hours from one semester.</li>
+<li><strong>CGPA</strong> uses semester SGPAs and semester credit hours from all completed semesters.</li>
+<li>Do not calculate a simple average when credit hours are different. Always use the weighted formulas shown above.</li>
+<li>The highest possible SGPA or CGPA is 4.00, and the final answer is reported to two decimal places.</li>
+</ol>
+</article>
+</div>
+</div>
 <footer class="developer-credit">Developed by <span>Muhammad Arif</span> &mdash; BS Cyber Security</footer>
 </div>
 
@@ -219,6 +277,26 @@ document.getElementById(map[section]).classList.add('active');
 document.getElementById(map[section]).setAttribute('aria-selected','true');
 if(section==='courses')renderCourses();
 }
+
+function showSchemePanel(panelId){
+const map={gradingDetails:'gradingDetailsBtn',gpaCalculation:'gpaCalculationBtn'};
+document.querySelectorAll('.scheme-panel').forEach(panel=>panel.style.display='none');
+document.querySelectorAll('.scheme-tab').forEach(tab=>{tab.classList.remove('active');tab.setAttribute('aria-selected','false');tab.tabIndex=-1});
+document.getElementById(panelId).style.display='block';
+const activeTab=document.getElementById(map[panelId]);
+activeTab.classList.add('active');
+activeTab.setAttribute('aria-selected','true');
+activeTab.tabIndex=0;
+}
+
+document.querySelector('.scheme-tabs').addEventListener('keydown',event=>{
+if(!['ArrowLeft','ArrowRight'].includes(event.key))return;
+const tabs=[...document.querySelectorAll('.scheme-tab')],current=tabs.indexOf(document.activeElement);
+if(current<0)return;
+event.preventDefault();
+const next=(current+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
+tabs[next].click();tabs[next].focus();
+});
 
 function calculateGPA(total){
 const r=Math.round(total);
