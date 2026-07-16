@@ -24,6 +24,8 @@ package installation, or external library is required.
 
 Curriculum data is bundled in `index.html` and `curricula.js`. The five source
 Markdown documents can be regenerated with `node scripts/build-curricula.js`.
+Run `node scripts/validate-project.js` to check browser assets, program data,
+HTML identifiers, JavaScript syntax, curriculum sources, and PDF removal.
 The SQL file documents a normalized schema for a possible future backend but is
 not required by the website.
 

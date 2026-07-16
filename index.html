@@ -120,6 +120,7 @@ h1{font-size:clamp(1.65rem,4vw,2.5rem);line-height:1.15;font-weight:850;letter-s
 
 <div id="courses" class="section" style="display:none">
 <div class="program-tabs" id="programTabs" role="tablist" aria-label="Degree programs"></div>
+<div id="courseCurriculumPanel" role="tabpanel" aria-live="polite">
 <div class="program-heading"><h2 id="programName"></h2><p id="programDescription"></p></div>
 <div class="course-tools">
 <div class="input-group" style="margin-bottom:0"><label>🔎 Search Course</label><input type="text" id="courseSearch" placeholder="Search by name or code..." oninput="renderCourses()"></div>
@@ -135,6 +136,7 @@ h1{font-size:clamp(1.65rem,4vw,2.5rem);line-height:1.15;font-weight:850;letter-s
 <thead><tr><th>Sr. No.</th><th>Course Name</th><th>Course Code</th><th>Credit Hours</th><th>Category</th></tr></thead>
 <tbody id="courseTableBody"></tbody>
 </table>
+</div>
 </div>
 </div>
 <footer class="developer-credit">Developed by <span>Muhammad Arif</span> &mdash; BS Cyber Security</footer>
@@ -795,7 +797,7 @@ let selectedProgramId='cyber-security';
 
 function initializePrograms(){
 const tabs=document.getElementById('programTabs');
-tabs.innerHTML=curriculumRepository.getPrograms().map(program=>`<button type="button" class="program-tab" role="tab" aria-controls="courseTableBody" id="program-${program.id}" onclick="selectProgram('${program.id}')">${program.shortName}</button>`).join('');
+tabs.innerHTML=curriculumRepository.getPrograms().map(program=>`<button type="button" class="program-tab" role="tab" aria-controls="courseCurriculumPanel" id="program-${program.id}" onclick="selectProgram('${program.id}')">${program.shortName}</button>`).join('');
 tabs.addEventListener('keydown',event=>{
 if(!['ArrowLeft','ArrowRight'].includes(event.key))return;
 const all=[...tabs.querySelectorAll('.program-tab')],current=all.indexOf(document.activeElement);
@@ -812,6 +814,7 @@ selectedProgramId=programId;
 const program=curriculumRepository.getProgram(programId);
 document.querySelectorAll('.program-tab').forEach(tab=>{const active=tab.id===`program-${programId}`;tab.classList.toggle('active',active);tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1});
 document.getElementById('programName').textContent=program.name;
+document.getElementById('courseCurriculumPanel').setAttribute('aria-labelledby',`program-${programId}`);
 document.getElementById('programDescription').textContent=program.status==='available'?'Complete curriculum with course codes, credit hours and categories.':'Curriculum data will be added soon. This program already uses the shared curriculum architecture.';
 document.getElementById('courseSearch').value='';
 initializeCourseFilters();

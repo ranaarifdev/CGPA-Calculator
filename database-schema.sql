@@ -11,7 +11,9 @@ CREATE TABLE programs (
 
 CREATE TABLE courses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    code TEXT NOT NULL UNIQUE,
+    -- Codes are not globally unique because source curricula may use placeholders
+    -- such as COSE-xxxx for several not-yet-assigned course codes.
+    code TEXT NOT NULL,
     name TEXT NOT NULL,
     credit_hours REAL NOT NULL CHECK (credit_hours > 0),
     credit_display TEXT NOT NULL
@@ -29,6 +31,8 @@ CREATE TABLE program_courses (
 
 CREATE INDEX idx_program_courses_program
     ON program_courses(program_id, display_order);
+
+CREATE INDEX idx_courses_code ON courses(code);
 
 INSERT INTO programs (id, name, short_name, status) VALUES
     ('cyber-security', 'BS Cyber Security', 'Cyber Security', 'available'),
