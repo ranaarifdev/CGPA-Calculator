@@ -32,8 +32,8 @@ CREATE INDEX idx_program_courses_program
 
 INSERT INTO programs (id, name, short_name, status) VALUES
     ('cyber-security', 'BS Cyber Security', 'Cyber Security', 'available'),
-    ('artificial-intelligence', 'BS Artificial Intelligence', 'Artificial Intelligence', 'coming-soon'),
-    ('computer-science', 'BS Computer Science', 'Computer Science', 'coming-soon'),
-    ('software-engineering', 'BS Software Engineering', 'Software Engineering', 'coming-soon'),
-    ('information-technology', 'BS Information Technology', 'Information Technology', 'coming-soon'),
-    ('data-science', 'BS Data Science', 'Data Science', 'coming-soon');
+    ('artificial-intelligence', 'BS Artificial Intelligence', 'Artificial Intelligence', 'available'),
+    ('computer-science', 'BS Computer Science', 'Computer Science', 'available'),
+    ('software-engineering', 'BS Software Engineering', 'Software Engineering', 'available'),
+    ('information-technology', 'BS Information Technology', 'Information Technology', 'available'),
+    ('data-science', 'BS Data Science', 'Data Science', 'available');

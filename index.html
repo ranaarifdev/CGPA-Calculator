@@ -140,6 +140,7 @@ h1{font-size:clamp(1.65rem,4vw,2.5rem);line-height:1.15;font-weight:850;letter-s
 <footer class="developer-credit">Developed by <span>Muhammad Arif</span> &mdash; BS Cyber Security</footer>
 </div>
 
+<script src="curricula.js"></script>
 <script>
 function showSection(section){
 document.querySelectorAll('.section').forEach(x=>x.style.display='none');
@@ -777,11 +778,11 @@ const cyberSecurityCourses=[
 // the tabs, filters, summaries, and table are shared by every degree program.
 const programs=[
 {id:'cyber-security',shortName:'Cyber Security',name:'BS Cyber Security',status:'available',courses:cyberSecurityCourses},
-{id:'artificial-intelligence',shortName:'Artificial Intelligence',name:'BS Artificial Intelligence',status:'coming-soon',courses:[]},
-{id:'computer-science',shortName:'Computer Science',name:'BS Computer Science',status:'coming-soon',courses:[]},
-{id:'software-engineering',shortName:'Software Engineering',name:'BS Software Engineering',status:'coming-soon',courses:[]},
-{id:'information-technology',shortName:'Information Technology',name:'BS Information Technology',status:'coming-soon',courses:[]},
-{id:'data-science',shortName:'Data Science',name:'BS Data Science',status:'coming-soon',courses:[]}
+{id:'artificial-intelligence',shortName:'Artificial Intelligence',name:'BS Artificial Intelligence',status:'available',courses:additionalCurricula['artificial-intelligence']},
+{id:'computer-science',shortName:'Computer Science',name:'BS Computer Science',status:'available',courses:additionalCurricula['computer-science']},
+{id:'software-engineering',shortName:'Software Engineering',name:'BS Software Engineering',status:'available',courses:additionalCurricula['software-engineering']},
+{id:'information-technology',shortName:'Information Technology',name:'BS Information Technology',status:'available',courses:additionalCurricula['information-technology']},
+{id:'data-science',shortName:'Data Science',name:'BS Data Science',status:'available',courses:additionalCurricula['data-science']}
 ];
 
 const curriculumRepository={
