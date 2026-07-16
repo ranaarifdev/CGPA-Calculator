@@ -57,6 +57,10 @@ for (const source of sourceFiles) {
 const pdfs = fs.readdirSync(root).filter(file => file.toLowerCase().endsWith('.pdf'));
 if (pdfs.length) fail(`PDF files must not be published: ${pdfs.join(', ')}`);
 
+for (const requiredText of ['Grading Scheme', 'SGPA =', 'CGPA =', '80 &amp; above', 'R/Repeat']) {
+  if (!html.includes(requiredText)) fail(`Missing grading-scheme content: ${requiredText}`);
+}
+
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)]
   .map(match => match[1]).filter(Boolean);
 for (const [index, script] of inlineScripts.entries()) {

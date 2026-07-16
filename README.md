@@ -9,6 +9,7 @@ package installation, or external library is required.
 - Subject GPA calculator
 - Weighted semester SGPA calculator
 - Weighted overall CGPA calculator
+- Complete grading scheme with SGPA/CGPA formulas and examples
 - Reusable curriculum tabs for six BS programs
 - Course search and category filtering
 - Responsive and keyboard-accessible interface

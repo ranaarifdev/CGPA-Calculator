@@ -15,7 +15,7 @@ button{-webkit-tap-highlight-color:transparent}
 .app-header{text-align:center;margin-bottom:clamp(22px,4vw,36px)}
 h1{font-size:clamp(1.65rem,4vw,2.5rem);line-height:1.15;font-weight:850;letter-spacing:-.04em;background:linear-gradient(120deg,var(--primary),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
 .app-subtitle{color:var(--muted);font-size:clamp(.86rem,2vw,1rem);margin-top:9px}
-.button-group{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:clamp(22px,4vw,34px);padding:6px;background:#eef1f8;border-radius:16px}
+.button-group{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:clamp(22px,4vw,34px);padding:6px;background:#eef1f8;border-radius:16px}
 .button-group button{min-height:50px;padding:11px 12px;border:0;border-radius:11px;cursor:pointer;font-weight:750;font-size:.9rem;background:transparent;color:#526078;transition:background .2s,color .2s,box-shadow .2s,transform .2s}
 .button-group button:hover{color:var(--primary);background:rgba(255,255,255,.7)}
 .button-group button:focus-visible,.calculate-btn:focus-visible{outline:3px solid rgba(6,182,212,.38);outline-offset:2px}
@@ -63,10 +63,20 @@ h1{font-size:clamp(1.65rem,4vw,2.5rem);line-height:1.15;font-weight:850;letter-s
 .course-table tbody tr:hover{background:#eef2ff}
 .category-badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#e7e9ff;color:#4338ca;font-weight:750;font-size:.68rem;white-space:nowrap}
 .no-results{padding:28px;text-align:center;color:var(--muted);font-weight:650}
+.scheme-intro{margin-bottom:18px;color:var(--muted);line-height:1.65}
+.scheme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.scheme-card{padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--soft)}
+.scheme-card h3,.scheme-text h3{color:var(--primary-dark);font-size:1rem;margin-bottom:9px}
+.formula{padding:12px;border-radius:10px;background:#fff;border:1px solid var(--line);font-family:Consolas,monospace;font-weight:750;color:var(--primary);overflow-wrap:anywhere}
+.example{margin-top:10px;font-size:.84rem;color:#526078;line-height:1.65}
+.scheme-text{margin-top:20px;padding:clamp(16px,3vw,24px);border:1px solid var(--line);border-radius:14px;background:#fff}
+.scheme-text ol{padding-left:22px;color:#46536a;line-height:1.7}
+.scheme-text li+li{margin-top:10px}
+.grading-table{min-width:540px}
 .developer-credit{text-align:center;margin-top:28px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:.8rem;font-weight:650}
 .developer-credit span{color:var(--primary);font-weight:850}
 @media(min-width:760px){#subject{display:grid;grid-template-columns:repeat(3,1fr);gap:0 16px}#subject .grade-scale,#subject .calculate-btn,#subject .result-box,#subject .info-note{grid-column:1/-1}}
-@media(max-width:700px){body{padding:0;background:#fff}.container{min-height:100vh;border:0;border-radius:0;box-shadow:none;padding:20px 15px 28px}.app-header{margin:6px 0 22px}.button-group{grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:22px}.button-group button{min-height:48px;font-size:.82rem;padding:9px 7px}.grade-scale{grid-template-columns:repeat(2,1fr);gap:8px}.course-tools{grid-template-columns:1fr;gap:0}.course-summary{gap:7px}.summary-card{padding:12px 5px}.summary-card strong{font-size:1.25rem}.summary-card span{font-size:.66rem}.course-table-wrapper{border-radius:10px}.developer-credit{line-height:1.6}}
+@media(max-width:700px){body{padding:0;background:#fff}.container{min-height:100vh;border:0;border-radius:0;box-shadow:none;padding:20px 15px 28px}.app-header{margin:6px 0 22px}.button-group{grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:22px}.button-group button{min-height:48px;font-size:.82rem;padding:9px 7px}.grade-scale{grid-template-columns:repeat(2,1fr);gap:8px}.course-tools{grid-template-columns:1fr;gap:0}.course-summary{gap:7px}.summary-card{padding:12px 5px}.summary-card strong{font-size:1.25rem}.summary-card span{font-size:.66rem}.course-table-wrapper{border-radius:10px}.scheme-grid{grid-template-columns:1fr}.developer-credit{line-height:1.6}}
 @media(max-width:390px){.weighted-input-grid{grid-template-columns:minmax(0,1.6fr) minmax(82px,1fr)}.input-heading{grid-template-columns:minmax(0,1.6fr) minmax(82px,1fr)}.subject-row,.semester-row{padding:10px}.input-group input,.input-group select,.weighted-input-grid input{font-size:16px;padding:10px}.course-summary{grid-template-columns:1fr}.summary-card{display:flex;align-items:center;justify-content:space-between;padding:11px 14px}.summary-card strong{margin:0;order:2}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 </style>
@@ -83,14 +93,15 @@ h1{font-size:clamp(1.65rem,4vw,2.5rem);line-height:1.15;font-weight:850;letter-s
 <button type="button" role="tab" aria-selected="false" aria-controls="semester" id="semesterBtn" onclick="showSection('semester')">📊 Semester</button>
 <button type="button" role="tab" aria-selected="false" aria-controls="total" id="totalBtn" onclick="showSection('total')">🎯 CGPA</button>
 <button type="button" role="tab" aria-selected="false" aria-controls="courses" id="coursesBtn" onclick="showSection('courses')">📚 Courses</button>
+<button type="button" role="tab" aria-selected="false" aria-controls="grading" id="gradingBtn" onclick="showSection('grading')">📋 Grading Scheme</button>
 </div>
 
 <div id="subject" class="section">
 <div class="grade-scale">
-<div class="grade-item"><strong>A+</strong>80-100%</div>
-<div class="grade-item"><strong>A</strong>70-79%</div>
-<div class="grade-item"><strong>B</strong>60-69%</div>
-<div class="grade-item"><strong>C</strong>50-59%</div>
+<div class="grade-item"><strong>A</strong>80-100%</div>
+<div class="grade-item"><strong>B+</strong>75-79%</div>
+<div class="grade-item"><strong>B</strong>65-74%</div>
+<div class="grade-item"><strong>C/C+</strong>50-64%</div>
 </div>
 <div class="input-group"><label>📝 Final Exam (50%)</label><input type="number" id="final" placeholder="Enter marks out of 50" min="0" max="50" step="0.01"></div>
 <div class="input-group"><label>📝 Mid Exam (30%)</label><input type="number" id="mid" placeholder="Enter marks out of 30" min="0" max="30" step="0.01"></div>
@@ -139,6 +150,61 @@ h1{font-size:clamp(1.65rem,4vw,2.5rem);line-height:1.15;font-weight:850;letter-s
 </div>
 </div>
 </div>
+
+<div id="grading" class="section" style="display:none">
+<p class="scheme-intro">Official grading system, calculation formulas, and reporting rules. The grading table and regulations below are transcribed from the supplied grading-system document.</p>
+
+<div class="scheme-grid">
+<article class="scheme-card">
+<h3>Semester GPA / SGPA Formula</h3>
+<div class="formula">SGPA = Σ (Course Grade Point × Course Credit Hours) ÷ Σ Course Credit Hours</div>
+<p class="example"><strong>Example:</strong> Three courses have grade points and credits of 4.00 × 3, 3.50 × 3, and 3.00 × 2. Quality points = 12 + 10.5 + 6 = 28.5. Total credits = 8. <strong>SGPA = 28.5 ÷ 8 = 3.56.</strong></p>
+</article>
+<article class="scheme-card">
+<h3>Cumulative GPA / CGPA Formula</h3>
+<div class="formula">CGPA = Σ (Semester SGPA × Semester Credit Hours) ÷ Σ Semester Credit Hours</div>
+<p class="example"><strong>Example:</strong> Semester 1 has 3.40 SGPA over 15 credits and Semester 2 has 3.70 SGPA over 18 credits. Quality points = 51 + 66.6 = 117.6. Total credits = 33. <strong>CGPA = 117.6 ÷ 33 = 3.56.</strong></p>
+</article>
+</div>
+
+<h2 style="font-size:1.2rem;margin-bottom:12px">Marks, Grade Points, and Grades</h2>
+<div class="course-table-wrapper">
+<table class="course-table grading-table">
+<thead><tr><th>Marks</th><th>Grade Point</th><th>Grade</th><th>Marks</th><th>Grade Point</th><th>Grade</th></tr></thead>
+<tbody>
+<tr><td>50.00</td><td>2.00</td><td>C</td><td>65.00</td><td>3.00</td><td>B</td></tr>
+<tr><td>51.00</td><td>2.10</td><td>C</td><td>66.00</td><td>3.10</td><td>B</td></tr>
+<tr><td>52.00</td><td>2.10</td><td>C</td><td>67.00</td><td>3.10</td><td>B</td></tr>
+<tr><td>53.00</td><td>2.20</td><td>C</td><td>68.00</td><td>3.20</td><td>B</td></tr>
+<tr><td>54.00</td><td>2.30</td><td>C</td><td>69.00</td><td>3.30</td><td>B</td></tr>
+<tr><td>55.00</td><td>2.30</td><td>C</td><td>70.00</td><td>3.30</td><td>B</td></tr>
+<tr><td>56.00</td><td>2.40</td><td>C</td><td>71.00</td><td>3.40</td><td>B</td></tr>
+<tr><td>57.00</td><td>2.50</td><td>C</td><td>72.00</td><td>3.50</td><td>B</td></tr>
+<tr><td>58.00</td><td>2.50</td><td>C</td><td>73.00</td><td>3.50</td><td>B</td></tr>
+<tr><td>59.00</td><td>2.60</td><td>C</td><td>74.00</td><td>3.60</td><td>B</td></tr>
+<tr><td>60.00</td><td>2.70</td><td>C+</td><td>75.00</td><td>3.70</td><td>B+</td></tr>
+<tr><td>61.00</td><td>2.70</td><td>C+</td><td>76.00</td><td>3.70</td><td>B+</td></tr>
+<tr><td>62.00</td><td>2.80</td><td>C+</td><td>77.00</td><td>3.80</td><td>B+</td></tr>
+<tr><td>63.00</td><td>2.90</td><td>C+</td><td>78.00</td><td>3.90</td><td>B+</td></tr>
+<tr><td>64.00</td><td>2.90</td><td>C+</td><td>79.00</td><td>3.90</td><td>B+</td></tr>
+<tr><td colspan="3"></td><td>80 &amp; above</td><td>4.00</td><td>A</td></tr>
+</tbody>
+</table>
+</div>
+
+<article class="scheme-text">
+<h3>Complete Grading-System Regulations</h3>
+<ol>
+<li>Grading of the students shall be made as per the table above.</li>
+<li>Maximum possible Grade Point Average is 4.00.</li>
+<li>The fraction of marks obtained in a course shall be counted as one mark, e.g. 60.3 shall be considered as 60 while 59.5 or more is to be considered as 60.</li>
+<li>Grade Point Average (GPA) is an expression for the average performance of the student in the courses he has taken during any semester; thus GPA may be calculated for 1st semester, 2nd, or any other semester.</li>
+<li>CGPA and GPA shall be rounded to 2 decimal places, e.g. a CGPA/GPA of 3.084285 shall be reported as 3.08, while a CGPA/GPA of 3.065124 shall be reported as 3.07.</li>
+<li>If a student fails a course he shall be awarded “F” for failure in a given course grade, representing that he has failed the course in that semester. He shall repeat the failed course whenever offered again. In case he passes the same in the subsequent semester it shall be signified by “R/Repeat,” showing that it is a repeated course passed later on.</li>
+<li>It shall be mandatory for a student to pass both written and viva of a research project/research thesis/research report at all levels where the research project has been opted for degree completion.</li>
+</ol>
+</article>
+</div>
 <footer class="developer-credit">Developed by <span>Muhammad Arif</span> &mdash; BS Cyber Security</footer>
 </div>
 
@@ -148,7 +214,7 @@ function showSection(section){
 document.querySelectorAll('.section').forEach(x=>x.style.display='none');
 document.getElementById(section).style.display='block';
 document.querySelectorAll('.button-group button').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-selected','false')});
-const map={subject:'subjectBtn',semester:'semesterBtn',total:'totalBtn',courses:'coursesBtn'};
+const map={subject:'subjectBtn',semester:'semesterBtn',total:'totalBtn',courses:'coursesBtn',grading:'gradingBtn'};
 document.getElementById(map[section]).classList.add('active');
 document.getElementById(map[section]).setAttribute('aria-selected','true');
 if(section==='courses')renderCourses();
@@ -158,7 +224,7 @@ function calculateGPA(total){
 const r=Math.round(total);
 if(r>=80)return 4.0;if(r>=78)return 3.9;if(r===77)return 3.8;if(r>=75)return 3.7;if(r===74)return 3.6;if(r>=72)return 3.5;if(r===71)return 3.4;if(r>=69)return 3.3;if(r===68)return 3.2;if(r>=66)return 3.1;if(r===65)return 3.0;if(r>=63)return 2.9;if(r===62)return 2.8;if(r>=60)return 2.7;if(r===59)return 2.6;if(r>=57)return 2.5;if(r===56)return 2.4;if(r>=54)return 2.3;if(r===53)return 2.2;if(r>=51)return 2.1;if(r===50)return 2.0;return 0.0;
 }
-function getGrade(total){const r=Math.round(total);if(r>=80)return'A+';if(r>=70)return'A';if(r>=60)return'B';if(r>=50)return'C';return'F'}
+function getGrade(total){const r=Math.round(total);if(r>=80)return'A';if(r>=75)return'B+';if(r>=65)return'B';if(r>=60)return'C+';if(r>=50)return'C';return'F'}
 function valid(v,max){return Number.isFinite(v)&&v>=0&&v<=max}
 
 function calculateSubjectGPA(){
